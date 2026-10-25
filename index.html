@@ -1,0 +1,1349 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Chúc Mừng Sinh Nhật & Tiệm Bánh Của Cậu</title>
+    <style>
+        /* =========================================================
+           1. BIẾN MÀU SẮC ĐỘ TƯƠNG PHẢN CAO & HIỆU ỨNG LUNG LINH
+           ========================================================= */
+        :root {
+            --bg-deep: #090A14;
+            --bg-cosmic: linear-gradient(135deg, #090A14 0%, #1A103C 50%, #2D124D 100%);
+            
+            /* Nền kính mờ đậm hơn để chữ trắng nổi bật tuyệt đối (WCAG AAA) */
+            --glass-bg: rgba(17, 24, 39, 0.88);
+            --glass-panel: rgba(30, 41, 59, 0.92);
+            --glass-border: rgba(255, 255, 255, 0.22);
+            --glass-glow: 0 12px 36px rgba(0, 0, 0, 0.65), 0 0 25px rgba(236, 72, 153, 0.22);
+
+            /* Màu chữ độ tương phản cực cao */
+            --text-white: #FFFFFF;
+            --text-bright: #F8FAFC;
+            --text-soft: #E2E8F0;
+            --text-gold: #FDE047;
+            --text-cyan: #67E8F9;
+            --text-pink: #F472B6;
+            --text-dark: #0F172A;
+
+            /* Màu nút bấm nổi bật */
+            --grad-primary: linear-gradient(135deg, #EC4899 0%, #8B5CF6 100%);
+            --grad-secondary: linear-gradient(135deg, #06B6D4 0%, #3B82F6 100%);
+            --grad-success: linear-gradient(135deg, #10B981 0%, #059669 100%);
+            --grad-gold: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+
+            /* Chuẩn kích thước vùng chạm trên Mobile */
+            --touch-target: 52px;
+            --radius-lg: 20px;
+            --radius-md: 14px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: var(--bg-cosmic);
+            background-attachment: fixed;
+            color: var(--text-white);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            line-height: 1.55;
+        }
+
+        /* =========================================================
+           2. LỚP NỀN PHÁO HOA CANVAS & CHỮ HOLOGRAM BAY LƠ LỬNG
+           ========================================================= */
+        #fx-canvas {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        #hologram-layer {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .holo-word {
+            position: absolute;
+            font-weight: 900;
+            letter-spacing: 2px;
+            white-space: nowrap;
+            opacity: 0;
+            user-select: none;
+            animation: floatHologram linear infinite;
+        }
+
+        @keyframes floatHologram {
+            0% {
+                transform: translateY(105vh) scale(0.75) rotate(-4deg);
+                opacity: 0;
+            }
+            15% {
+                opacity: 0.35;
+            }
+            85% {
+                opacity: 0.35;
+            }
+            100% {
+                transform: translateY(-18vh) scale(1.15) rotate(4deg);
+                opacity: 0;
+            }
+        }
+
+        /* =========================================================
+           3. THANH ĐIỀU HƯỚNG TRÊN CÙNG & HỆ THỐNG NÚT BẤM (TOUCH >= 52PX)
+           ========================================================= */
+        .top-navbar {
+            position: sticky;
+            top: 0;
+            z-index: 30;
+            background: rgba(9, 10, 20, 0.9);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 10px 16px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 800;
+            font-size: 1.05rem;
+            color: var(--text-gold);
+            text-shadow: 0 0 12px rgba(253, 224, 71, 0.45);
+        }
+
+        .nav-controls {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Nút bấm chuẩn Touch Target cho Mobile & Tablet */
+        .btn {
+            min-height: var(--touch-target);
+            padding: 10px 18px;
+            border-radius: var(--radius-md);
+            border: 1.5px solid rgba(255, 255, 255, 0.28);
+            font-family: inherit;
+            font-size: 0.98rem;
+            font-weight: 700;
+            color: var(--text-white);
+            background: rgba(30, 41, 59, 0.9);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: transform 0.15s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+            user-select: none;
+            text-decoration: none;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            border-color: rgba(255, 255, 255, 0.65);
+        }
+
+        .btn:active {
+            transform: scale(0.97);
+        }
+
+        .btn-primary {
+            background: var(--grad-primary);
+            border-color: #F472B6;
+            box-shadow: 0 6px 20px rgba(236, 72, 153, 0.45);
+        }
+
+        .btn-secondary {
+            background: var(--grad-secondary);
+            border-color: #67E8F9;
+            box-shadow: 0 6px 20px rgba(6, 182, 212, 0.4);
+        }
+
+        .btn-success {
+            background: var(--grad-success);
+            border-color: #6EE7B7;
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.45);
+        }
+
+        .btn-gold {
+            background: var(--grad-gold);
+            color: #FFFFFF;
+            border-color: #FDE047;
+            box-shadow: 0 6px 20px rgba(245, 158, 11, 0.45);
+        }
+
+        .btn-compact {
+            min-height: 48px;
+            padding: 8px 14px;
+            font-size: 0.92rem;
+        }
+
+        /* =========================================================
+           4. KHUNG CHỨA CÁC MÀN HÌNH RESPONSIVE
+           ========================================================= */
+        .app-container {
+            flex: 1;
+            width: 100%;
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 20px 14px 44px;
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .screen {
+            display: none;
+            width: 100%;
+            animation: screenFadeIn 0.45s ease forwards;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes screenFadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* =========================================================
+           5. MÀN HÌNH 1: HỘP QUÀ PHÁT SÁNG KỲ DIỆU
+           ========================================================= */
+        .gift-card-stage {
+            max-width: 560px;
+            margin: 16px auto;
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1.5px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--glass-glow);
+            padding: 32px 22px;
+            text-align: center;
+        }
+
+        .badge-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(236, 72, 153, 0.22);
+            border: 1.5px solid #F472B6;
+            color: var(--text-gold);
+            padding: 6px 16px;
+            border-radius: 999px;
+            font-weight: 800;
+            font-size: 0.92rem;
+            margin-bottom: 16px;
+        }
+
+        .hero-title {
+            font-size: clamp(1.65rem, 4.5vw, 2.5rem);
+            font-weight: 900;
+            color: var(--text-white);
+            text-shadow: 0 2px 14px rgba(236, 72, 153, 0.65);
+            margin-bottom: 10px;
+        }
+
+        .hero-desc {
+            font-size: 1.05rem;
+            color: var(--text-soft);
+            margin-bottom: 24px;
+        }
+
+        /* Nút Hộp quà lớn trên mọi thiết bị */
+        .gift-box-btn {
+            width: 100%;
+            max-width: 280px;
+            min-height: 240px;
+            margin: 0 auto 24px;
+            background: radial-gradient(circle, rgba(236, 72, 153, 0.25) 0%, rgba(30, 41, 59, 0.85) 75%);
+            border: 2px dashed #F472B6;
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            padding: 20px;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            box-shadow: 0 0 30px rgba(236, 72, 153, 0.35);
+        }
+
+        .gift-box-btn:hover {
+            transform: scale(1.04);
+            box-shadow: 0 0 42px rgba(253, 224, 71, 0.55);
+        }
+
+        .gift-svg-float {
+            animation: giftBounce 2.2s ease-in-out infinite;
+            filter: drop-shadow(0 0 18px rgba(244, 114, 182, 0.7));
+        }
+
+        .gift-shake {
+            animation: giftShakeAnim 0.55s ease-in-out !important;
+        }
+
+        @keyframes giftBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-12px); }
+        }
+
+        @keyframes giftShakeAnim {
+            0%, 100% { transform: rotate(0deg) scale(1); }
+            20% { transform: rotate(-12deg) scale(1.08); }
+            40% { transform: rotate(12deg) scale(1.12); }
+            60% { transform: rotate(-10deg) scale(1.15); }
+            80% { transform: rotate(10deg) scale(1.1); }
+        }
+
+        /* =========================================================
+           6. MÀN HÌNH 2: THIỆP CHÚC MỪNG SINH NHẬT & THỔI NẾN
+           ========================================================= */
+        .birthday-card-panel {
+            max-width: 880px;
+            margin: 0 auto;
+            background: var(--glass-bg);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border: 1.5px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--glass-glow);
+            padding: 26px 20px;
+        }
+
+        .card-header-center {
+            text-align: center;
+            border-bottom: 1px solid var(--glass-border);
+            padding-bottom: 18px;
+            margin-bottom: 22px;
+        }
+
+        .card-grid-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 22px;
+            align-items: stretch;
+        }
+
+        /* Khung bánh kem & nến tương tác */
+        .cake-interactive-box {
+            background: var(--glass-panel);
+            border: 1.5px solid rgba(103, 232, 249, 0.35);
+            border-radius: var(--radius-md);
+            padding: 20px 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            text-align: center;
+            gap: 14px;
+        }
+
+        .flame-flicker {
+            transform-origin: center bottom;
+            animation: candleFlicker 0.65s ease-in-out infinite alternate;
+            filter: drop-shadow(0 0 12px #FDE047);
+        }
+
+        @keyframes candleFlicker {
+            0% { transform: scale(1) rotate(-2deg); }
+            100% { transform: scale(1.12, 0.92) rotate(2deg); }
+        }
+
+        /* Khung lời chúc độ tương phản cao */
+        .message-content-box {
+            background: var(--glass-panel);
+            border: 1.5px solid rgba(244, 114, 182, 0.4);
+            border-radius: var(--radius-md);
+            padding: 22px 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .greeting-headline {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--text-gold);
+        }
+
+        .greeting-paragraph {
+            font-size: 1.08rem;
+            color: var(--text-white);
+            line-height: 1.7;
+            min-height: 120px;
+        }
+
+        .wish-status-box {
+            background: rgba(16, 185, 129, 0.2);
+            border: 1.5px solid #34D399;
+            border-radius: 12px;
+            padding: 12px 14px;
+            color: #A7F3D0;
+            font-weight: 700;
+            font-size: 0.96rem;
+        }
+
+        .card-bottom-actions {
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid var(--glass-border);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+        }
+        /* Toast Thông Báo Nổi Bật */
+        .toast-msg {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 80;
+            background: #0F172A;
+            color: var(--text-gold);
+            border: 2px solid var(--text-gold);
+            border-radius: 14px;
+            padding: 14px 22px;
+            font-weight: 800;
+            font-size: 0.98rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+            max-width: 92vw;
+            text-align: center;
+        }
+
+        /* ===== TIỆM BÁNH (GAME MỚI) ===== */
+        .gm{width:100%;max-width:1100px;margin:0 auto;display:flex;flex-direction:column;gap:10px}
+        .gbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:var(--radius-md);padding:8px 12px;font-weight:700;font-size:.92rem}
+        .xp{flex:1;min-width:80px;height:10px;background:#334155;border-radius:9px;overflow:hidden}
+        .xp i{display:block;height:100%;background:var(--grad-gold)}
+        .phbar{display:flex;gap:4px;overflow-x:auto}
+        .ph{flex:1;min-width:66px;text-align:center;font-size:.74rem;padding:7px 4px;border-radius:10px;background:rgba(30,41,59,.9);border:1px solid var(--glass-border);color:var(--text-soft)}
+        .ph.on{background:var(--grad-primary);color:#fff;font-weight:800}
+        .ph.done{border-color:#34D399;color:#6EE7B7;cursor:pointer}
+        .gmain{display:grid;gap:12px}
+        .gbox{background:var(--glass-panel);border:1px solid var(--glass-border);border-radius:var(--radius-lg);padding:14px}
+        .gbox h3{color:var(--text-gold);font-size:1rem;margin:8px 0 6px}
+        .gbox h3:first-child{margin-top:0}
+        .stage{background:linear-gradient(180deg,#FFE4EC,#FFF7E6);color:#0F172A;border-radius:var(--radius-lg);padding:10px;display:flex;flex-direction:column;align-items:center;gap:8px;min-height:300px;transition:box-shadow .3s}
+        .stage.oven{box-shadow:inset 0 0 70px #F97316}
+        .stage svg{max-width:100%;touch-action:none}
+        #ck{width:100%;max-width:420px;aspect-ratio:320/250;cursor:crosshair}
+        .chips{display:flex;flex-wrap:wrap;gap:5px;justify-content:center}
+        .chip{font-size:.78rem;font-weight:700;padding:3px 9px;border-radius:99px;background:#fff;border:1.5px solid #CBD5E1;color:#475569}
+        .chip.ok{background:#DCFCE7;border-color:#16A34A;color:#166534}
+        .cust{display:flex;align-items:center;gap:10px;animation:slideIn .6s ease-out}
+        .cust svg{width:110px;flex:none}
+        .bub{background:#fff;border:2.5px solid #0F172A;border-radius:16px;padding:10px 14px;font-weight:600;max-width:300px}
+        .opts{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px}
+        .opt{min-height:54px;padding:6px;border-radius:12px;border:2px solid rgba(255,255,255,.25);background:rgba(15,23,42,.8);color:#fff;font:inherit;font-weight:700;font-size:.88rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;text-align:center}
+        .opt:active{transform:scale(.96)}
+        .opt.sel{border-color:#FDE047;box-shadow:0 0 0 2px #FDE047}
+        .opt.lock{opacity:.4}
+        .opt .em{font-size:1.7rem}
+        .sw{width:20px;height:20px;border-radius:50%;border:2px solid #0F172A;display:inline-block}
+        .pb{height:14px;background:#334155;border-radius:9px;overflow:hidden;margin-top:8px}
+        .pb i{display:block;height:100%;width:0;background:var(--grad-gold);transition:width 2.2s linear}
+        .gnav{display:flex;gap:8px}
+        .gnav .btn{flex:1}
+        .btn[disabled]{opacity:.45;cursor:not-allowed}
+        .ckrow{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.12);font-size:.9rem}
+        .stars{font-size:2.2rem;letter-spacing:4px}
+        .txin{width:100%;min-height:48px;border-radius:12px;border:2px solid rgba(255,255,255,.3);background:#0F172A;color:#fff;padding:8px 12px;font:inherit}
+        .gmodal{display:none;position:fixed;inset:0;z-index:70;background:rgba(0,0,0,.75);align-items:center;justify-content:center;padding:16px}
+        .gmodal.show{display:flex}
+        .gmodal .gbox{max-width:440px;width:100%}
+        .spr{animation:spr .45s ease-out}
+        .pop{animation:popA .5s ease-out}
+        .lid{animation:lidDrop .6s ease-in}
+        .give{animation:giveA 1.3s ease-in-out forwards}
+        @keyframes spr{from{transform:translateY(-14px);opacity:0}to{transform:none;opacity:1}}
+        @keyframes popA{0%{transform:scale(.7)}60%{transform:scale(1.08)}100%{transform:scale(1)}}
+        @keyframes lidDrop{from{transform:translateY(-90px);opacity:0}to{transform:none;opacity:1}}
+        @keyframes slideIn{from{transform:translateX(-80px);opacity:0}to{transform:none;opacity:1}}
+        @keyframes giveA{0%{transform:translateX(-120px) scale(.8);opacity:0}60%{opacity:1}100%{transform:translateX(30px) scale(.6)}}
+        @media (min-width:640px){.birthday-card-panel{padding:32px 28px}}
+        @media (min-width:860px){.card-grid-layout{grid-template-columns:5fr 7fr}}
+        @media (min-width:900px){.gmain{grid-template-columns:7fr 5fr;align-items:start}}
+        @media (prefers-reduced-motion:reduce){.spr,.pop,.lid,.cust{animation:none}}
+    </style>
+</head>
+<body>
+
+    <!-- Lớp Chữ Hologram Bay Lơ Lửng & Pháo Hoa 2D/Confetti -->
+    <div id="hologram-layer" aria-hidden="true"></div>
+    <canvas id="fx-canvas" aria-hidden="true"></canvas>
+
+    <!-- =========================================================
+         THANH ĐIỀU HƯỚNG TRÊN CÙNG (CHUYỂN MÀN HÌNH & BẬT/TẮT NHẠC)
+         ========================================================= -->
+    <header class="top-navbar">
+        <div class="brand-logo">
+            <span>🎂 SINH NHẬT & TIỆM BÁNH CỦA CẬU</span>
+        </div>
+
+        <div class="nav-controls">
+            <button type="button" class="btn btn-compact" id="music-toggle-btn" onclick="toggleAudioMute()">
+                <span id="music-toggle-label">🔊 Nhạc: Bật</span>
+            </button>
+            <button type="button" class="btn btn-compact" onclick="navigateScreen('screen-card')">
+                <span>💌 Xem Thiệp</span>
+            </button>
+            <button type="button" class="btn btn-compact btn-primary" onclick="navigateScreen('screen-game')">
+                <span>🎮 Tiệm Bánh</span>
+            </button>
+        </div>
+    </header>
+
+    <main class="app-container">
+
+        <!-- =========================================================
+             MÀN HÌNH 1: MỞ HỘP QUÀ PHÁT SÁNG
+             ========================================================= -->
+        <section id="screen-gift" class="screen active" aria-labelledby="gift-title">
+            <div class="gift-card-stage">
+                <div class="badge-pill">✨ MÓN QUÀ BẤT NGỜ DÀNH TẶNG CẬU ✨</div>
+                <h1 id="gift-title" class="hero-title">Có Một Hộp Quà Đang Đợi Cậu!</h1>
+                <p class="hero-desc">
+                    Hãy chạm vào hộp quà phát sáng bên dưới để bật nhạc sinh nhật, ngắm pháo hoa Hologram và mở tấm thiệp đặc biệt nhé!
+                </p>
+
+                <!-- Hộp quà vùng chạm lớn -->
+                <button type="button" class="gift-box-btn" id="gift-trigger" onclick="unlockBirthdaySurprise()" aria-label="Chạm để mở hộp quà sinh nhật">
+                    <svg class="gift-svg-float" id="gift-box-svg" width="135" height="135" viewBox="0 0 160 160" aria-hidden="true">
+                        <!-- Nơ phát sáng -->
+                        <path d="M80 42 C52 10, 24 32, 50 54 C62 60, 74 52, 80 42 Z" fill="#FDE047" stroke="#1E1B4B" stroke-width="3.5"/>
+                        <path d="M80 42 C108 10, 136 32, 110 54 C98 60, 86 52, 80 42 Z" fill="#FDE047" stroke="#1E1B4B" stroke-width="3.5"/>
+                        <circle cx="80" cy="42" r="9" fill="#F59E0B" stroke="#1E1B4B" stroke-width="3"/>
+                        <!-- Nắp hộp -->
+                        <rect x="22" y="44" width="116" height="26" rx="6" fill="#EC4899" stroke="#1E1B4B" stroke-width="3.5"/>
+                        <rect x="69" y="44" width="22" height="26" fill="#FDE047" stroke="#1E1B4B" stroke-width="3"/>
+                        <!-- Thân hộp -->
+                        <rect x="30" y="70" width="100" height="72" rx="6" fill="#DB2777" stroke="#1E1B4B" stroke-width="3.5"/>
+                        <rect x="69" y="70" width="22" height="72" fill="#FDE047" stroke="#1E1B4B" stroke-width="3"/>
+                    </svg>
+                    <span style="font-weight: 900; font-size: 1.08rem; color: var(--text-gold); letter-spacing: 0.5px;">
+                        🎁 CHẠM VÀO ĐÂY ĐỂ MỞ QUÀ
+                    </span>
+                </button>
+
+                <button type="button" class="btn btn-primary" style="width: 100%; max-width: 280px;" onclick="unlockBirthdaySurprise()">
+                    <span>🎉 Mở Hộp Quà Ngay</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- =========================================================
+             MÀN HÌNH 2: THIỆP CHÚC MỪNG SINH NHẬT, PHÁO HOA & THỔI NẾN
+             ========================================================= -->
+        <section id="screen-card" class="screen" aria-labelledby="card-title">
+            <div class="birthday-card-panel">
+                <div class="card-header-center">
+                    <div class="badge-pill">🌟 HAPPY BIRTHDAY TO YOU 🌟</div>
+                    <h1 id="card-title" class="hero-title">Chúc Mừng Sinh Nhật!</h1>
+                </div>
+
+                <div class="card-grid-layout">
+                    <!-- Cột trái: Bánh Sinh Nhật 3D SVG & Thổi Nến -->
+                    <div class="cake-interactive-box">
+                        <svg width="190" height="190" viewBox="0 0 200 200" aria-label="Bánh kem sinh nhật có nến cháy sáng">
+                            <!-- Đĩa bánh phát sáng -->
+                            <ellipse cx="100" cy="172" rx="76" ry="12" fill="#CBD5E1" stroke="#0F172A" stroke-width="3"/>
+                            <!-- Tầng bánh lớn -->
+                            <rect x="38" y="114" width="124" height="54" rx="10" fill="#F472B6" stroke="#0F172A" stroke-width="3"/>
+                            <path d="M38 128 Q54 144 70 128 T100 128 T130 128 T162 128 L162 114 L38 114 Z" fill="#FFFFFF" stroke="#0F172A" stroke-width="3"/>
+                            <!-- Tầng bánh trên -->
+                            <rect x="54" y="74" width="92" height="40" rx="8" fill="#FDE047" stroke="#0F172A" stroke-width="3"/>
+                            <path d="M54 88 Q69 102 85 88 T115 88 T146 88 L146 74 L54 74 Z" fill="#FFFFFF" stroke="#0F172A" stroke-width="3"/>
+                            <!-- Dâu tây đỏ trên bánh -->
+                            <circle cx="72" cy="72" r="7" fill="#E11D48" stroke="#0F172A" stroke-width="2.5"/>
+                            <circle cx="128" cy="72" r="7" fill="#E11D48" stroke="#0F172A" stroke-width="2.5"/>
+                            <!-- Cây nến -->
+                            <rect x="92" y="34" width="16" height="40" rx="3" fill="#FFFFFF" stroke="#0F172A" stroke-width="3"/>
+                            <line x1="92" y1="46" x2="108" y2="52" stroke="#EC4899" stroke-width="3.5"/>
+                            <line x1="92" y1="58" x2="108" y2="64" stroke="#EC4899" stroke-width="3.5"/>
+                            <line x1="100" y1="28" x2="100" y2="34" stroke="#0F172A" stroke-width="3"/>
+                            <!-- Ngọn lửa lung linh -->
+                            <g id="candle-flame-group" class="flame-flicker">
+                                <path d="M100 6 C86 20, 89 32, 100 33 C111 32, 114 20, 100 6 Z" fill="#F97316" stroke="#FDE047" stroke-width="2"/>
+                                <path d="M100 13 C93 22, 95 29, 100 30 C105 29, 107 22, 100 13 Z" fill="#FEF08A"/>
+                            </g>
+                            <!-- Khói bay lên khi thổi tắt -->
+                            <g id="candle-smoke-group" style="display: none;">
+                                <path d="M98 28 Q88 18 102 12 Q114 6 96 0" fill="none" stroke="#94A3B8" stroke-width="3.5" stroke-linecap="round"/>
+                            </g>
+                        </svg>
+
+                        <button type="button" class="btn btn-secondary" style="width: 100%;" onclick="toggleBirthdayCandle()">
+                            <span id="candle-btn-text">🌬️ Chạm Để Thổi Nến Ước Nguyện</span>
+                        </button>
+                    </div>
+
+                    <!-- Cột phải: Lời chúc mừng chạy chữ & Trạng thái điều ước -->
+                    <div class="message-content-box">
+                        <div>
+                            <h2 class="greeting-headline">Gửi Ánh! </h2>
+                            <p id="typewriter-wish" class="greeting-paragraph"></p>
+                        </div>
+
+                        <div id="wish-status-banner" class="wish-status-box">
+                            🕯️ Ngọn nến sinh nhật đang cháy sáng! Hãy nhắm mắt ước một điều thật đẹp rồi chạm nút <strong>Thổi Nến Ước Nguyện</strong> nhé!
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Các nút hành động lớn dưới tấm thiệp -->
+                <div class="card-bottom-actions">
+                    <button type="button" class="btn btn-primary" onclick="navigateScreen('screen-game')">
+                        <span>🍰 Chơi Game: Tiệm Bánh Sinh Nhật</span>
+                    </button>
+                    <button type="button" class="btn btn-gold" onclick="launchFireworkShow(6); playBirthdayMelody();">
+                        <span>🎆 Bắn Pháo Hoa & Phát Nhạc Sinh Nhật</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- =========================================================
+             MÀN HÌNH 3: GAME TIỆM BÁNH SINH NHẬT (BIRTHDAY CAKE SHOP)
+             ========================================================= -->
+        <section id="screen-game" class="screen" aria-label="Game Tiệm Bánh Sinh Nhật">
+            <div class="gm" id="gm">
+                <div class="gbar" id="gbar"></div>
+                <div class="phbar" id="phbar"></div>
+                <div class="gmain">
+                    <div class="stage" id="stage"></div>
+                    <div>
+                        <div class="gbox" id="gpanel"></div>
+                        <div class="gnav" id="gnav" style="margin-top:10px"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="gtut" class="gmodal" role="dialog" aria-modal="true">
+        <div class="gbox">
+            <h3>📖 Cách chơi</h3>
+            <p style="line-height:1.7">1. Xem đơn của khách, bấm <b>Bắt đầu</b>.<br>
+            2. Chọn <b>khuôn</b> → <b>cốt</b> (bấm nướng) → <b>kem</b>.<br>
+            3. <b>Trang trí</b>: chọn món rồi chạm lên bánh; kéo để di chuyển, kéo ra ngoài để xóa.<br>
+            4. <b>Kiểm tra</b> theo đơn, rồi <b>đóng hộp</b> và gửi bánh.<br>
+            Làm đúng đơn và đủ nhanh để nhận 5 sao, lên level để mở khóa thêm đồ!</p>
+            <button type="button" class="btn btn-primary" style="width:100%;margin-top:12px" data-a="tutclose">Đã hiểu!</button>
+        </div>
+    </div>
+
+    <!-- Thông báo Toast -->
+    <div id="toast-box" class="toast-msg" role="status" aria-live="polite"></div>
+
+    <!-- JAVASCRIPT -->
+    <script>
+        /* ---------------------------------------------------------
+           1. HỆ THỐNG ÂM THANH TỰ TẠO (WEB AUDIO API - KHÔNG LỖI LINK)
+           --------------------------------------------------------- */
+        let audioCtx = null;
+        let isMuted = false;
+
+        function ensureAudioContext() {
+            if (!audioCtx) {
+                const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                if (AudioContextClass) {
+                    audioCtx = new AudioContextClass();
+                }
+            }
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        function playTone(freq, duration, delay = 0, waveType = 'triangle', gainLevel = 0.14) {
+            if (isMuted) return;
+            ensureAudioContext();
+            if (!audioCtx) return;
+
+            const startTime = audioCtx.currentTime + delay;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+
+            osc.type = waveType;
+            osc.frequency.setValueAtTime(freq, startTime);
+
+            gain.gain.setValueAtTime(0.001, startTime);
+            gain.gain.linearRampToValueAtTime(gainLevel, startTime + 0.02);
+            gain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            osc.start(startTime);
+            osc.stop(startTime + duration + 0.03);
+        }
+
+        function playBirthdayMelody() {
+            if (isMuted) return;
+            const notes = [
+                { f: 261.63, d: 0.28, t: 0.0 },
+                { f: 261.63, d: 0.22, t: 0.32 },
+                { f: 293.66, d: 0.45, t: 0.58 },
+                { f: 261.63, d: 0.45, t: 1.08 },
+                { f: 349.23, d: 0.45, t: 1.58 },
+                { f: 329.63, d: 0.80, t: 2.08 },
+
+                { f: 261.63, d: 0.28, t: 3.0 },
+                { f: 261.63, d: 0.22, t: 3.32 },
+                { f: 293.66, d: 0.45, t: 3.58 },
+                { f: 261.63, d: 0.45, t: 4.08 },
+                { f: 392.00, d: 0.45, t: 4.58 },
+                { f: 349.23, d: 0.85, t: 5.08 }
+            ];
+            notes.forEach(n => playTone(n.f, n.d, n.t, 'triangle', 0.16));
+        }
+
+        function playSfxClick() {
+            playTone(587.33, 0.09, 0, 'sine', 0.12);
+        }
+
+        function playSfxSuccess() {
+            playTone(523.25, 0.15, 0, 'triangle', 0.16);
+            playTone(659.25, 0.15, 0.12, 'triangle', 0.16);
+            playTone(783.99, 0.32, 0.24, 'triangle', 0.18);
+        }
+
+        function playSfxFail() {
+            playTone(300, 0.2, 0, 'sawtooth', 0.1);
+            playTone(220, 0.35, 0.18, 'sawtooth', 0.1);
+        }
+
+        function toggleAudioMute() {
+            isMuted = !isMuted;
+            const label = document.getElementById('music-toggle-label');
+            label.textContent = isMuted ? '🔇 Nhạc: Tắt' : '🔊 Nhạc: Bật';
+            if (!isMuted) {
+                playSfxClick();
+            }
+        }
+
+        /* ---------------------------------------------------------
+           2. HIỆU ỨNG HOLOGRAM BAY LƠ LỬNG & PHÁO HOA CANVAS
+           --------------------------------------------------------- */
+        function createHologramBackground() {
+            const container = document.getElementById('hologram-layer');
+            container.innerHTML = '';
+            const phrases = [
+                'HAPPY BIRTHDAY',
+                'CHÚC MỪNG SINH NHẬT',
+                '✨ HBD BESTIE ✨',
+                '🎂 TUỔI MỚI RỰC RỠ 🎂',
+                '💖 MÃI KEO 💖'
+            ];
+            const neonColors = ['#67E8F9', '#F472B6', '#FDE047', '#C084FC'];
+
+            for (let i = 0; i < 20; i++) {
+                const span = document.createElement('div');
+                span.className = 'holo-word';
+                span.textContent = phrases[i % phrases.length];
+                const color = neonColors[i % neonColors.length];
+
+                span.style.left = (Math.random() * 88) + 'vw';
+                span.style.fontSize = (Math.random() * 0.85 + 0.95) + 'rem';
+                span.style.animationDuration = (Math.random() * 6 + 7) + 's';
+                span.style.animationDelay = (Math.random() * 6) + 's';
+                span.style.color = color;
+                span.style.textShadow = `0 0 10px ${color}, 0 0 22px ${color}`;
+
+                container.appendChild(span);
+            }
+        }
+
+        const fxCanvas = document.getElementById('fx-canvas');
+        const fxCtx = fxCanvas.getContext('2d');
+        let particles = [];
+        let fxAnimating = false;
+
+        function resizeFxCanvas() {
+            fxCanvas.width = window.innerWidth;
+            fxCanvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeFxCanvas);
+        resizeFxCanvas();
+
+        function createBurstParticles(x, y) {
+            const colors = ['#FDE047', '#F472B6', '#67E8F9', '#34D399', '#C084FC', '#FB7185'];
+            const count = 34;
+            for (let i = 0; i < count; i++) {
+                const angle = (Math.PI * 2 * i) / count + (Math.random() * 0.2);
+                const speed = Math.random() * 4.5 + 1.8;
+                particles.push({
+                    x: x,
+                    y: y,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed - 0.8,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    alpha: 1,
+                    size: Math.random() * 3.5 + 2.5
+                });
+            }
+        }
+
+        function launchFireworkShow(bursts = 4) {
+            startFxLoop();
+            for (let i = 0; i < bursts; i++) {
+                setTimeout(() => {
+                    const rx = Math.random() * (fxCanvas.width * 0.72) + fxCanvas.width * 0.14;
+                    const ry = Math.random() * (fxCanvas.height * 0.45) + 70;
+                    createBurstParticles(rx, ry);
+                }, i * 240);
+            }
+        }
+
+        function startFxLoop() {
+            if (fxAnimating) return;
+            fxAnimating = true;
+
+            function loop() {
+                fxCtx.clearRect(0, 0, fxCanvas.width, fxCanvas.height);
+                for (let i = particles.length - 1; i >= 0; i--) {
+                    const p = particles[i];
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.vy += 0.045;
+                    p.alpha -= 0.016;
+
+                    if (p.alpha <= 0) {
+                        particles.splice(i, 1);
+                        continue;
+                    }
+
+                    fxCtx.globalAlpha = p.alpha;
+                    fxCtx.fillStyle = p.color;
+                    fxCtx.beginPath();
+                    fxCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    fxCtx.fill();
+                }
+                requestAnimationFrame(loop);
+            }
+            loop();
+        }
+
+        /* ---------------------------------------------------------
+           3. MỞ HỘP QUÀ, CHẠY CHỮ THIỆP SINH NHẬT & THỔI NẾN
+           --------------------------------------------------------- */
+        const birthdayWishMessage = "Chúc mừng sinh nhật cậu! Chúc cậu bước sang tuổi mới học tập thật giỏi, đạt được nhiều kết quả tốt và gặp thật nhiều may mắn trong cuộc sống. Mong cậu luôn vui vẻ, khỏe mạnh và mọi điều cậu mong muốn đều thành hiện thực! 🎂🎉✨";
+        let wishTyped = false;
+        let candleLit = true;
+
+        function unlockBirthdaySurprise() {
+            const giftSvg = document.getElementById('gift-box-svg');
+            giftSvg.classList.add('gift-shake');
+            playBirthdayMelody();
+
+            setTimeout(() => {
+                createHologramBackground();
+                navigateScreen('screen-card');
+                launchFireworkShow(6);
+            }, 520);
+        }
+
+        function navigateScreen(screenId) {
+            playSfxClick();
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            const target = document.getElementById(screenId);
+            if (target) target.classList.add('active');
+
+            if (screenId === 'screen-card') {
+                if (!wishTyped) {
+                    wishTyped = true;
+                    runTypewriterWish(birthdayWishMessage);
+                }
+            }
+
+            if (screenId === 'screen-game') {
+                initBakeryGame();
+            } else {
+                stopPatienceTimer();
+            }
+        }
+
+        function runTypewriterWish(text) {
+            const el = document.getElementById('typewriter-wish');
+            el.textContent = '';
+            let idx = 0;
+            function step() {
+                if (idx < text.length) {
+                    el.textContent += text.charAt(idx);
+                    idx++;
+                    setTimeout(step, 24);
+                }
+            }
+            step();
+        }
+
+        function toggleBirthdayCandle() {
+            const flame = document.getElementById('candle-flame-group');
+            const smoke = document.getElementById('candle-smoke-group');
+            const btnText = document.getElementById('candle-btn-text');
+            const statusBanner = document.getElementById('wish-status-banner');
+
+            if (candleLit) {
+                candleLit = false;
+                flame.style.display = 'none';
+                smoke.style.display = 'block';
+                btnText.textContent = '🔥 Thắp Sáng Lại Ngọn Nến';
+                statusBanner.innerHTML = '🌠 <strong>Tuyệt vời!</strong> Cậu đã thổi tắt nến! Chúc cho điều ước sinh nhật của cậu sớm trở thành hiện thực nhé!';
+                playSfxSuccess();
+                launchFireworkShow(7);
+                showToast('🎉 Đã gửi điều ước sinh nhật lên bầu trời sao!');
+            } else {
+                candleLit = true;
+                flame.style.display = 'block';
+                smoke.style.display = 'none';
+                btnText.textContent = '🌬️ Chạm Để Thổi Nến Ước Nguyện';
+                statusBanner.innerHTML = '🕯️ Ngọn nến sinh nhật đang cháy sáng! Hãy nhắm mắt ước một điều thật đẹp rồi chạm nút <strong>Thổi Nến Ước Nguyện</strong> nhé!';
+                playSfxClick();
+            }
+        }
+        /* ---------------------------------------------------------
+           4. GAME TIỆM BÁNH (dữ liệu, đơn hàng, chấm điểm, giao diện)
+           --------------------------------------------------------- */
+        let toastTimer = null;
+        function showToast(msg) {
+            const box = document.getElementById('toast-box');
+            box.textContent = msg;
+            box.style.display = 'block';
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => { box.style.display = 'none'; }, 3200);
+        }
+
+        const SZ = { S: ['Nhỏ', 62], M: ['Vừa', 80], L: ['Lớn', 98] };
+        const SH = { round: ['Tròn', '⚪', 1], square: ['Vuông', '⬜', 1], heart: ['Tim', '💗', 2] };
+        const FL = { van: ['Vani', '#FDE68A', 1], cho: ['Socola', '#8B5A3C', 1], str: ['Dâu', '#F9A8D4', 1], mat: ['Matcha', '#86EFAC', 3] };
+        const CR = { white: ['Trắng', '#FFFFFF', 1], pink: ['Hồng', '#FBCFE8', 1], yel: ['Bơ vàng', '#FEF08A', 1], cho: ['Socola', '#9A6B4B', 2], mint: ['Mint', '#99F6E4', 3], pur: ['Tím', '#DDD6FE', 4] };
+        const DC = { straw: ['🍓', 1], cherry: ['🍒', 1], candle: ['🕯️', 1], star: ['⭐', 1], cand: ['🍬', 2], flower: ['🌸', 2], choco: ['🍫', 3], cookie: ['🍪', 3], crown: ['👑', 4], rainbow: ['🌈', 5] };
+        const ED = { none: ['Trơn', 1], pearl: ['Ngọc trai', 2], rose: ['Hoa kem', 3] };
+        const BX = { sq: ['Hộp vuông', 1], rd: ['Hộp tròn', 2], win: ['Hộp cửa sổ', 3] };
+        const BC = { pink: ['Hồng', '#F9A8D4', 1], mint: ['Mint', '#6EE7B7', 1], yel: ['Vàng', '#FDE047', 2], brn: ['Nâu', '#B7791F', 3] };
+        const RB = { red: ['Đỏ', '#EF4444'], blue: ['Xanh', '#3B82F6'], gold: ['Cam', '#F59E0B'], white: ['Trắng', '#FFFFFF'] };
+        const TX = ['Happy Birthday', 'Chúc mừng sinh nhật', 'Love you', 'Mãi đỉnh'];
+        const TH = [
+            { n: 'Công chúa', cr: ['pink', 'white'], dc: ['crown', 'star', 'flower', 'straw'] },
+            { n: 'Vườn hoa', cr: ['mint', 'pink', 'yel'], dc: ['flower', 'cherry', 'star'] },
+            { n: 'Trái cây', cr: ['white', 'pink', 'yel'], dc: ['straw', 'cherry'] },
+            { n: 'Socola', cr: ['cho', 'white'], dc: ['choco', 'cookie', 'cand', 'candle'] },
+            { n: 'Cầu vồng', cr: ['pur', 'pink', 'white'], dc: ['rainbow', 'cand', 'star', 'crown'] },
+            { n: 'Tiệc nến', cr: ['white', 'yel', 'pink'], dc: ['candle', 'star', 'cherry', 'cand'] }
+        ];
+        const NAMES = ['Minh Anh', 'Hoàng Nam', 'Bảo Ngọc', 'Gia Huy', 'Thảo Tiên', 'Khánh Linh'];
+        const PH = ['Đơn', 'Khuôn', 'Cốt', 'Kem', 'Trang trí', 'Kiểm tra', 'Đóng gói', 'Giao'];
+        const WT = { mold: 15, flavor: 15, cream: 15, edge: 5, deco: 25, text: 10, pack: 10 };
+        const CAT_PH = { mold: 2, flavor: 3, cream: 4, edge: 4, deco: 5, text: 5, pack: 7 };
+        const SAVE_KEY = 'bcs_save_v1';
+
+        const store = {
+            get() { try { return JSON.parse(localStorage.getItem(SAVE_KEY)); } catch (e) { return null; } },
+            set(v) { try { localStorage.setItem(SAVE_KEY, JSON.stringify(v)); } catch (e) { /* bỏ qua */ } }
+        };
+        let S = Object.assign({ lv: 1, xp: 0, coins: 0, cakes: 0, best: 0, streak: 0, tut: 0 }, store.get() || {});
+        let G = null, lastTh = '', gTimer = null, drag = null, gReady = false;
+
+        const pick = a => a[Math.random() * a.length | 0];
+        const shuf = a => a.slice().sort(() => Math.random() - 0.5);
+        const avail = o => Object.keys(o).filter(k => o[k][o[k].length - 1] <= S.lv);
+        const $g = id => document.getElementById(id);
+
+        /* ----- Tạo đơn hàng ngẫu nhiên có ràng buộc (chỉ dùng đồ đã mở khóa) ----- */
+        function genOrder() {
+            const L = S.lv, r = Math.random();
+            const pH = L < 3 ? 0 : Math.min(0.4, 0.1 * (L - 2)), pM = L < 2 ? 0 : 0.4;
+            const d = r < pH ? 3 : r < pH + pM ? 2 : 1;
+            let th; do { th = pick(TH); } while (th.n === lastTh);
+            lastTh = th.n;
+            const pool = avail(DC), tp = th.dc.filter(k => pool.includes(k));
+            const base = tp.length >= 2 ? tp : pool;
+            const nT = d === 1 ? 1 + (Math.random() < 0.5 ? 1 : 0) : d === 2 ? 2 + (Math.random() < 0.4 ? 1 : 0) : 3;
+            const deco = shuf(base).slice(0, Math.min(nT, base.length)).map(k => ({ k, n: d === 3 ? 2 : 1 + (Math.random() < 0.3 ? 1 : 0) }));
+            const crAv = th.cr.filter(k => avail(CR).includes(k));
+            const edges = avail(ED).filter(k => k !== 'none');
+            return {
+                id: '#' + (1000 + S.cakes + 1), th: th.n, d,
+                cu: { n: pick(NAMES), s: pick(['#EC4899', '#3B82F6', '#A855F7', '#10B981', '#F59E0B']), h: pick(['#1E1B4B', '#451A03', '#7C2D12', '#31102F']), k: pick(['#FDE0C8', '#F5C9A0', '#E8B48A']) },
+                shape: pick(avail(SH)), size: pick(Object.keys(SZ)), flavor: pick(avail(FL)),
+                cream: pick(crAv.length ? crAv : avail(CR)),
+                edge: d === 3 && edges.length ? pick(edges) : null,
+                deco, text: d >= 2 && Math.random() < (d === 3 ? 1 : 0.6) ? pick(TX) : null,
+                box: d >= 2 ? pick(avail(BX)) : null, col: pick(avail(BC)),
+                rib: d >= 2 ? pick(Object.keys(RB)) : null, card: d === 3,
+                target: [180, 150, 120][d - 1], reward: [80, 120, 180][d - 1]
+            };
+        }
+
+        /* ----- Danh sách yêu cầu: dùng chung cho chip, kiểm tra và chấm điểm ----- */
+        function reqs(o, c, p) {
+            const r = [], add = (cat, l, g) => r.push({ cat, l, g });
+            add('mold', 'Khuôn ' + SH[o.shape][0], c.shape === o.shape ? 1 : 0);
+            add('mold', 'Cỡ ' + SZ[o.size][0], c.size === o.size ? 1 : 0);
+            add('flavor', 'Cốt ' + FL[o.flavor][0], c.flavor === o.flavor && c.baked ? 1 : 0);
+            add('cream', 'Kem ' + CR[o.cream][0], c.cream === o.cream ? 1 : 0);
+            if (o.edge) add('edge', 'Viền ' + ED[o.edge][0], c.edge === o.edge ? 1 : 0);
+            o.deco.forEach(x => {
+                const n = c.decos.filter(e => e.k === x.k).length;
+                add('deco', DC[x.k][0] + ' ×' + x.n + (n !== x.n ? ' (đang có ' + n + ')' : ''), Math.min(n, x.n) / x.n);
+            });
+            if (o.text) add('text', 'Chữ “' + o.text + '”', c.text.trim().toLowerCase() === o.text.toLowerCase() ? 1 : (c.text.trim() ? 0.3 : 0));
+            if (o.box) add('pack', BX[o.box][0], p.box === o.box ? 1 : 0);
+            add('pack', 'Hộp màu ' + BC[o.col][0], p.col === o.col ? 1 : 0);
+            if (o.rib) add('pack', 'Ruy băng ' + RB[o.rib][0], p.rib === o.rib ? 1 : 0);
+            if (o.card) add('pack', 'Có thiệp chúc mừng', p.card ? 1 : 0);
+            return r;
+        }
+
+        /* ----- Chấm điểm minh bạch: chính xác 90 + thời gian 10 ----- */
+        function scoreOrder(o, c, p, t, withPack) {
+            const R = reqs(o, c, p), use = R.filter(x => withPack || x.cat !== 'pack'), cats = {};
+            use.forEach(x => (cats[x.cat] = cats[x.cat] || []).push(x.g));
+            let s = 0, w = 0;
+            for (const k in cats) { s += WT[k] * cats[k].reduce((a, b) => a + b, 0) / cats[k].length; w += WT[k]; }
+            const acc = w ? s / w * 90 : 0;
+            // Làm sai nhiều (chính xác < 50%) thì không được thưởng tốc độ
+            const tm = acc < 45 ? 0 : t <= o.target ? 10 : Math.max(2, 10 * (1 - (t - o.target) / o.target));
+            const tot = Math.round(acc + tm);
+            return { R: use, acc: Math.round(acc), tm: Math.round(tm), tot, stars: tot >= 90 ? 5 : tot >= 75 ? 4 : tot >= 60 ? 3 : tot >= 40 ? 2 : 1 };
+        }
+
+        /* ----- Vẽ bánh bằng SVG (một nguồn dữ liệu duy nhất: G.c) ----- */
+        function ptsA(sh, cx, cy, rx, ry) {
+            const a = [];
+            for (let i = 0; i < 48; i++) {
+                const t = i / 48 * 6.2832, c = Math.cos(t), s = Math.sin(t); let x, y;
+                if (sh === 'heart') { x = 16 * s ** 3 / 16; y = -(13 * c - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t)) / 16; }
+                else if (sh === 'square') { x = Math.sign(c) * Math.abs(c) ** 0.45; y = Math.sign(s) * Math.abs(s) ** 0.45; }
+                else { x = c; y = s; }
+                a.push([cx + x * rx, cy + y * ry]);
+            }
+            return a;
+        }
+        function cakeInner(c, u, selI) {
+            const rx = SZ[c.size || 'M'][1], ry = rx * 0.4, H = 36 + rx * 0.2, cx = 160, cy = 112, T = 't' + u;
+            const A = ptsA(c.shape || 'round', cx, cy, rx, ry);
+            const d = 'M' + A.map(p => p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join('L') + 'Z';
+            const stack = (f, h, tp) => { let o = ''; for (let y = h; y > 0; y -= 2) o += `<use href="#${T}" y="${y}" fill="${f}"/>`; return o + `<use href="#${T}" fill="${tp}"/><use href="#${T}" fill="#fff" fill-opacity="0.25"/>`; };
+            let o = `<defs><path id="${T}" d="${d}"/></defs><ellipse cx="${cx}" cy="${cy + H + 6}" rx="${rx * 1.28}" ry="${ry * 1.3}" fill="#E2E8F0" stroke="#94A3B8" stroke-width="2"/>`;
+            for (let y = H; y >= 0; y -= 6) o += `<use href="#${T}" y="${y}" fill="#0F172A" stroke="#0F172A" stroke-width="6"/>`;
+            if (!c.baked) {
+                const inner = c.batter ? FL[c.flavor][1] : '#475569';
+                o += stack('#94A3B8', H, '#94A3B8') + `<use href="#${T}" fill="${inner}" transform="translate(${cx} ${cy}) scale(.88) translate(${-cx} ${-cy})"/>`;
+            } else {
+                o += `<g class="${c.fx === 'bake' ? 'pop' : ''}" style="transform-origin:160px 150px">` + stack(FL[c.flavor][1], H, FL[c.flavor][1]) + '</g>';
+                if (c.cream) {
+                    const cc = CR[c.cream][1];
+                    o += `<g class="${c.fx === 'cream' ? 'spr' : ''}">` + stack(cc, H - 8, cc);
+                    if (c.edge === 'pearl') for (let i = 0; i < 48; i += 3) o += `<circle cx="${A[i][0].toFixed(1)}" cy="${A[i][1].toFixed(1)}" r="4" fill="#fff" stroke="#0F172A" stroke-width="1.2"/>`;
+                    if (c.edge === 'rose') for (let i = 0; i < 48; i += 6) o += `<circle cx="${A[i][0].toFixed(1)}" cy="${A[i][1].toFixed(1)}" r="8" fill="${cc}" stroke="#0F172A" stroke-width="1.5"/><circle cx="${A[i][0].toFixed(1)}" cy="${A[i][1].toFixed(1)}" r="3.5" fill="#fff" fill-opacity="0.7"/>`;
+                    o += '</g>';
+                }
+                if (c.text) {
+                    const fs = Math.max(9, Math.min(20, rx * 1.5 / (c.text.length * 0.55)));
+                    const dark = !c.cream || ['white', 'pink', 'yel', 'mint', 'pur'].includes(c.cream);
+                    o += `<text x="${cx}" y="${cy + 4}" text-anchor="middle" font-size="${fs.toFixed(1)}" font-weight="800" font-family="'Segoe Script','Brush Script MT',cursive,sans-serif" fill="${dark ? '#7C2D12' : '#fff'}" style="pointer-events:none">${c.text.replace(/[<>&]/g, '')}</text>`;
+                }
+                c.decos.forEach((e, i) => {
+                    o += `<text data-i="${i}" x="${e.x}" y="${e.y}" text-anchor="middle" dominant-baseline="central" font-size="26" style="cursor:grab">${DC[e.k][0]}</text>`;
+                    if (i === selI) o += `<circle cx="${e.x}" cy="${e.y}" r="18" fill="none" stroke="#EC4899" stroke-width="2.5" stroke-dasharray="4 3" style="pointer-events:none"/>`;
+                });
+            }
+            c.fx = null;
+            return o;
+        }
+        const cakeSvg = (c, u, selI, id) => `<svg ${id ? 'id="' + id + '"' : ''} viewBox="0 0 320 250" aria-label="Chiếc bánh đang làm">${cakeInner(c, u, selI)}</svg>`;
+
+        /* ----- Hộp bánh SVG ----- */
+        function boxSvg(p, c, closed) {
+            const B = BC[p.col] ? BC[p.col][1] : '#F9A8D4', R = RB[p.rib || 'red'][1], t = p.box || 'sq', st = 'stroke="#0F172A" stroke-width="3"';
+            const showCake = !closed || t === 'win';
+            let o = '';
+            if (showCake) o += `<svg x="70" y="${closed ? 70 : 52}" width="220" height="172" viewBox="0 0 320 250">${cakeInner(Object.assign({}, c), 'b')}</svg>`;
+            if (t === 'rd') {
+                o += `<path d="M70 150V232A110 20 0 0 0 290 232V150Z" fill="${B}" ${st}/>`;
+                if (closed) o += `<g class="lid"><path d="M62 128v30a118 22 0 0 0 236 0v-30a118 22 0 0 0 -236 0Z" fill="${B}" ${st}/><ellipse cx="180" cy="128" rx="118" ry="22" fill="#fff" fill-opacity="0.35" ${st}/></g>`;
+            } else {
+                const hole = t === 'win' ? 'M92 168h176a14 14 0 0 1 14 14v34a14 14 0 0 1 -14 14H92a14 14 0 0 1 -14 -14v-34a14 14 0 0 1 14 -14Z' : '';
+                o += `<path fill-rule="evenodd" d="M60 150h240v100H60Z ${closed ? hole : ''}" fill="${B}" ${st}/>`;
+                if (closed) o += `<g class="lid"><rect x="52" y="124" width="256" height="34" rx="8" fill="${B}" ${st}/><rect x="52" y="124" width="256" height="34" rx="8" fill="#fff" fill-opacity="0.3"/></g>`;
+            }
+            if (closed) {
+                o += `<g class="lid"><rect x="168" y="${t === 'rd' ? 106 : 124}" width="24" height="${t === 'rd' ? 140 : 126}" fill="${R}" ${st} opacity="0.95"/><ellipse cx="160" cy="118" rx="22" ry="12" fill="${R}" ${st}/><ellipse cx="200" cy="118" rx="22" ry="12" fill="${R}" ${st}/><circle cx="180" cy="120" r="8" fill="${R}" ${st}/></g>`;
+                if (p.card) o += `<g transform="rotate(-8 262 210)"><rect x="236" y="190" width="54" height="40" rx="5" fill="#fff" ${st}/><text x="263" y="217" text-anchor="middle" font-size="22">💌</text></g>`;
+            }
+            return `<svg viewBox="0 0 360 260" style="width:100%;max-width:420px" aria-label="Hộp bánh">${o}</svg>`;
+        }
+
+        function custSvg(c, m) {
+            const mouth = { wow: '<ellipse cx="50" cy="60" rx="5" ry="6" fill="#7F1D1D"/>', happy: '<path d="M37 55Q50 70 63 55" fill="#fff" stroke="#0F172A" stroke-width="2.5"/>', ok: '<path d="M40 60H60" stroke="#0F172A" stroke-width="3" stroke-linecap="round"/>', sad: '<path d="M39 63Q50 52 61 63" fill="none" stroke="#0F172A" stroke-width="3" stroke-linecap="round"/>' }[m] || '';
+            return `<svg viewBox="0 0 100 112" aria-hidden="true"><rect x="20" y="70" width="60" height="42" rx="18" fill="${c.s}" stroke="#0F172A" stroke-width="3"/><circle cx="50" cy="44" r="28" fill="${c.k}" stroke="#0F172A" stroke-width="3"/><path d="M21 42Q22 12 50 13Q78 12 79 42Q66 26 50 28Q34 26 21 42Z" fill="${c.h}"/><circle cx="40" cy="45" r="3.5" fill="#0F172A"/><circle cx="60" cy="45" r="3.5" fill="#0F172A"/><circle cx="33" cy="55" r="4" fill="#F9A8D4" opacity=".7"/><circle cx="67" cy="55" r="4" fill="#F9A8D4" opacity=".7"/>${mouth}</svg>`;
+        }
+
+        /* ----- Vòng chơi ----- */
+        function initBakeryGame() {
+            if (!gReady) {
+                gReady = true;
+                const gm = $g('screen-game');
+                gm.addEventListener('click', onGameClick);
+                gm.addEventListener('input', e => { if (e.target.id === 'txin' && G) { G.c.text = e.target.value.slice(0, 22); G.c.fx = null; drawStage(); } });
+                gm.addEventListener('pointerdown', onDown);
+                window.addEventListener('pointermove', onMove);
+                window.addEventListener('pointerup', onUp);
+                $g('gtut').addEventListener('click', onGameClick);
+            }
+            if (!G) { if (!restoreOrder()) newOrder(); }
+            else render();
+            if (!S.tut) { S.tut = 1; save(); $g('gtut').classList.add('show'); }
+            clearInterval(gTimer);
+            gTimer = setInterval(() => {
+                if (G && G.ph >= 2 && G.ph <= 7) { G.t++; const e = $g('tmr'); if (e) e.textContent = '⏱ ' + G.t + 's / ' + G.o.target + 's'; }
+            }, 1000);
+        }
+        function stopPatienceTimer() { clearInterval(gTimer); }
+        function save() { store.set(S); }
+
+        /* ----- Tự lưu đơn đang làm dở (khôi phục khi mở lại) ----- */
+        const ORDER_KEY = 'bcs_order_v1';
+        function saveOrder() {
+            try {
+                if (!G || G.ph >= 8) { localStorage.removeItem(ORDER_KEY); return; }
+                localStorage.setItem(ORDER_KEY, JSON.stringify({ o: G.o, c: G.c, p: G.p, ph: G.ph, t: G.t }));
+            } catch (e) { /* bỏ qua */ }
+        }
+        function restoreOrder() {
+            try {
+                const d = JSON.parse(localStorage.getItem(ORDER_KEY));
+                if (!d || !d.o || !d.c || !d.p || !(d.ph >= 1 && d.ph <= 7)) return false;
+                if (!SH[d.o.shape] || !SZ[d.o.size] || !FL[d.o.flavor] || !CR[d.o.cream] || !BC[d.o.col] || !Array.isArray(d.o.deco) || !Array.isArray(d.c.decos)) return false;
+                const c = d.c;
+                c.decos = c.decos.filter(e => DC[e.k] && isFinite(e.x) && isFinite(e.y));
+                c.baked = !!c.baked; c.batter = c.baked; c.fx = null; c.text = typeof c.text === 'string' ? c.text : '';
+                if (!SH[c.shape]) c.shape = null;
+                if (!SZ[c.size]) c.size = null;
+                if (!FL[c.flavor]) { c.flavor = null; c.baked = false; c.batter = false; }
+                if (!CR[c.cream]) c.cream = null;
+                if (!ED[c.edge]) c.edge = 'none';
+                G = { o: d.o, c, p: d.p, ph: d.ph, t: d.t || 0, tool: null, sel: -1, baking: false, res: null, dlv: false };
+                render();
+                showToast('📌 Đã khôi phục đơn đang làm dở');
+                return true;
+            } catch (e) { return false; }
+        }
+        document.addEventListener('visibilitychange', () => { if (document.hidden) { saveOrder(); save(); } });
+        window.addEventListener('pagehide', () => { saveOrder(); save(); });
+
+        function newOrder() {
+            G = { o: genOrder(), c: { shape: null, size: null, flavor: null, baked: false, batter: false, cream: null, edge: 'none', decos: [], text: '', fx: null }, p: { box: null, col: null, rib: null, card: false, packed: false }, ph: 1, t: 0, tool: null, sel: -1, baking: false, res: null, dlv: false };
+            render();
+        }
+
+        const need = () => 60 + 40 * S.lv;
+        const opt = (a, k, v, label, sel, lock) => `<button type="button" class="opt${sel ? ' sel' : ''}${lock ? ' lock' : ''}" data-a="${a}" data-k="${k}" data-v="${v}"${lock ? ' data-lock="' + lock + '"' : ''}>${label}${lock ? '🔒' + lock : ''}</button>`;
+        const lk = lv => lv > S.lv ? lv : 0;
+
+        function render() {
+            if (!G) return;
+            const o = G.o;
+            $g('gbar').innerHTML = `<span>⭐ Lv ${S.lv}</span><div class="xp"><i style="width:${Math.min(100, S.xp / need() * 100)}%"></i></div><span>💰 ${S.coins}</span><span>🎂 ${S.cakes}</span><span>🔥 ${S.streak}</span><span>🏆 ${S.best}</span><span id="tmr">⏱ ${G.t}s / ${o.target}s</span><button type="button" class="btn btn-compact" data-a="tut">❓</button>`;
+            $g('phbar').innerHTML = PH.map((n, i) => `<div class="ph${G.ph === i + 1 ? ' on' : ''}${i + 1 < G.ph && G.ph < 8 ? ' done' : ''}" ${i + 1 < G.ph && G.ph < 8 ? `data-a="go" data-v="${i + 1}"` : ''}>${i + 1}. ${n}</div>`).join('');
+            drawStage(); drawPanel(); drawNav();
+        }
+
+        function chipsHtml(list, showPack) {
+            return '<div class="chips">' + list.map(x => `<span class="chip${x.g >= 1 && (showPack || x.cat !== 'pack') ? ' ok' : ''}">${x.g >= 1 && (showPack || x.cat !== 'pack') ? '✓' : '○'} ${x.l}</span>`).join('') + '</div>';
+        }
+
+        function drawStage() {
+            const st = $g('stage'), o = G.o, ph = G.ph;
+            saveOrder();
+            st.classList.toggle('oven', G.baking);
+            const R = reqs(o, G.c, G.p);
+            if (ph === 1) {
+                st.innerHTML = `<div class="cust">${custSvg(o.cu, 'wow')}<div class="bub">Chào bạn! Mình là <b>${o.cu.n}</b>. Mình cần một chiếc bánh chủ đề <b>${o.th}</b> nhé!</div></div><div style="font-weight:800">Đơn ${o.id}</div>${chipsHtml(R.map(x => ({ ...x, g: 0 })), true)}`;
+            } else if (ph <= 6) {
+                st.innerHTML = chipsHtml(R.filter(x => x.cat !== 'pack'), false) + cakeSvg(G.c, 'a', G.sel, 'ck');
+            } else if (ph === 7) {
+                st.innerHTML = chipsHtml(R.filter(x => x.cat === 'pack'), true) + boxSvg(G.p, G.c, G.p.packed);
+            } else if (G.dlv) {
+                st.innerHTML = `<div class="cust">${custSvg(o.cu, 'wow')}<div class="give" style="width:130px">${boxSvg(G.p, G.c, true)}</div></div><b>Đang giao bánh...</b>`;
+            } else {
+                const r = G.res, mood = r.stars >= 4 ? 'happy' : r.stars === 3 ? 'ok' : 'sad';
+                const say = r.stars === 5 ? 'Tuyệt vời! Đúng y như mình muốn!' : r.stars === 4 ? 'Đẹp quá, cảm ơn bạn nhé!' : r.stars === 3 ? 'Cũng được, nhưng còn thiếu vài chỗ.' : 'Ơ... không giống đơn lắm...';
+                st.innerHTML = `<div class="cust">${custSvg(o.cu, mood)}<div class="bub">${say}</div></div><div class="stars pop">${'⭐'.repeat(r.stars)}${'☆'.repeat(5 - r.stars)}</div><b>${r.tot}/100 điểm</b>${chipsHtml(r.R, true)}`;
+            }
+        }
+
+        function drawPanel() {
+            const p = $g('gpanel'), c = G.c, o = G.o, q = G.p, ph = G.ph;
+            let h = '';
+            if (ph === 1) {
+                h = `<h3>📋 Đơn ${o.id}</h3><p>Chủ đề: <b>${o.th}</b><br>Độ khó: <b>${['', 'Dễ', 'Trung bình', 'Khó'][o.d]}</b><br>Thời gian mục tiêu: <b>${o.target}s</b><br>Thưởng cơ bản: <b>💰 ${o.reward}</b></p><p style="margin-top:8px;color:var(--text-soft)">Ghi nhớ các yêu cầu ở khung bên trái rồi bấm bắt đầu!</p>`;
+            } else if (ph === 2) {
+                h = '<h3>Chọn khuôn</h3><div class="opts">' + Object.keys(SH).map(k => opt('c', 'shape', k, `<span class="em">${SH[k][1]}</span> ${SH[k][0]}`, c.shape === k, lk(SH[k][2]))).join('') + '</div><h3>Kích cỡ</h3><div class="opts">' + Object.keys(SZ).map(k => opt('c', 'size', k, SZ[k][0], c.size === k)).join('') + '</div>';
+            } else if (ph === 3) {
+                h = '<h3>Chọn cốt bánh</h3><div class="opts">' + Object.keys(FL).map(k => opt('c', 'flavor', k, `<i class="sw" style="background:${FL[k][1]}"></i>${FL[k][0]}`, c.flavor === k, lk(FL[k][2]))).join('') + `</div><button type="button" class="btn btn-gold" style="width:100%;margin-top:12px" data-a="bake" ${!c.flavor || G.baking || c.baked ? 'disabled' : ''}>${c.baked ? '✅ Bánh đã nướng xong' : G.baking ? '🔥 Đang nướng...' : '🥣 Đổ bột & nướng'}</button><div class="pb"><i id="pbf" style="${c.baked ? 'width:100%;transition:none' : ''}"></i></div>`;
+            } else if (ph === 4) {
+                h = '<h3>Màu kem</h3><div class="opts">' + Object.keys(CR).map(k => opt('c', 'cream', k, `<i class="sw" style="background:${CR[k][1]}"></i>${CR[k][0]}`, c.cream === k, lk(CR[k][2]))).join('') + '</div><h3>Viền kem</h3><div class="opts">' + Object.keys(ED).map(k => opt('c', 'edge', k, ED[k][0], c.edge === k, lk(ED[k][1]))).join('') + '</div>';
+            } else if (ph === 5) {
+                h = '<h3>Chọn món rồi chạm lên bánh</h3><div class="opts">' + Object.keys(DC).map(k => opt('tool', 'tool', k, `<span class="em">${DC[k][0]}</span>`, G.tool === k, lk(DC[k][1]))).join('') + `</div><div style="display:flex;gap:8px;margin-top:8px"><button type="button" class="btn btn-compact" style="flex:1" data-a="del" ${G.sel < 0 ? 'disabled' : ''}>🗑 Xóa món chọn</button><button type="button" class="btn btn-compact" style="flex:1" data-a="clr">Xóa hết</button></div><h3>Chữ trên bánh</h3><div class="opts">` + TX.map(t => opt('txt', 'text', t, t, c.text === t)).join('') + `</div><input id="txin" class="txin" maxlength="22" placeholder="Hoặc tự viết lời chúc..." value="${c.text.replace(/"/g, '&quot;')}" style="margin-top:8px">`;
+            } else if (ph === 6) {
+                const s = scoreOrder(o, c, q, G.t, false);
+                h = `<h3>Kiểm tra thành phẩm</h3><p>Độ khớp đơn (chưa gồm đóng gói): <b>${Math.round(s.acc / 90 * 100)}%</b></p>` + s.R.map(x => `<div class="ckrow"><span>${x.g >= 1 ? '✅' : x.g > 0 ? '🟡' : '❌'} ${x.l}</span>${x.g < 1 ? `<button type="button" class="btn btn-compact" data-a="go" data-v="${CAT_PH[x.cat]}">Sửa</button>` : ''}</div>`).join('');
+            } else if (ph === 7) {
+                h = '<h3>Loại hộp</h3><div class="opts">' + Object.keys(BX).map(k => opt('p', 'box', k, BX[k][0], q.box === k, lk(BX[k][1]))).join('') + '</div><h3>Màu hộp</h3><div class="opts">' + Object.keys(BC).map(k => opt('p', 'col', k, `<i class="sw" style="background:${BC[k][1]}"></i>${BC[k][0]}`, q.col === k, lk(BC[k][2]))).join('') + '</div><h3>Ruy băng & thiệp</h3><div class="opts">' + Object.keys(RB).map(k => opt('p', 'rib', k, `<i class="sw" style="background:${RB[k][1]}"></i>${RB[k][0]}`, q.rib === k)).join('') + opt('p', 'card', 'toggle', '💌 Thiệp', q.card) + `</div><button type="button" class="btn btn-gold" style="width:100%;margin-top:12px" data-a="pack" ${!q.box || !q.col ? 'disabled' : ''}>📦 ${q.packed ? 'Đóng lại hộp' : 'Đóng hộp'}</button>`;
+            } else if (G.dlv) {
+                h = '<h3>🚚 Đang giao...</h3>';
+            } else {
+                const r = G.res, ok = r.R.filter(x => x.g >= 1), miss = r.R.filter(x => x.g < 1);
+                h = `<h3>Tổng kết</h3><p>Chính xác: <b>${r.acc}/90</b> · Thời gian: <b>${r.tm}/10</b> (${G.t}s / ${o.target}s)</p><p>💰 <b>+${r.coins}</b> xu · ✨ <b>+${r.xp}</b> XP${r.up ? '<br>🎉 <b>Lên Level ' + S.lv + '!</b>' + (r.unl.length ? ' Mở khóa: ' + r.unl.join(' ') : '') : ''}</p><p style="margin-top:6px">👍 Làm tốt: ${ok.length ? ok.map(x => x.l).join(', ') : '—'}</p>${miss.length ? '<p style="margin-top:6px">⚠️ Còn thiếu: ' + miss.map(x => x.l).join(', ') + '</p>' : ''}`;
+            }
+            p.innerHTML = h;
+        }
+
+        function drawNav() {
+            const ph = G.ph, n = $g('gnav');
+            if (ph === 8) { n.innerHTML = G.dlv ? '' : '<button type="button" class="btn btn-primary" data-a="again">🍰 Nhận đơn tiếp theo</button>'; return; }
+            n.innerHTML = (ph > 1 ? '<button type="button" class="btn" data-a="back">← Quay lại</button>' : '') + `<button type="button" class="btn btn-primary" data-a="next">${ph === 1 ? '🍰 Bắt đầu làm bánh' : ph === 7 ? '🚚 Gửi bánh' : 'Tiếp →'}</button>`;
+        }
+
+        function canNext() {
+            const c = G.c, ph = G.ph;
+            if (G.baking) return 'Bánh đang nướng, đợi chút nhé!';
+            if (ph === 2 && (!c.shape || !c.size)) return 'Hãy chọn khuôn và kích cỡ!';
+            if (ph === 3 && !c.baked) return 'Hãy chọn cốt và bấm nướng bánh!';
+            if (ph === 7 && !G.p.packed) return 'Hãy chọn hộp và bấm Đóng hộp!';
+            return '';
+        }
+
+        function finish() {
+            const o = G.o, r = scoreOrder(o, G.c, G.p, G.t, true);
+            r.coins = Math.round(o.reward * (0.4 + 0.6 * r.tot / 100)) + (r.stars === 5 ? 20 : 0) + Math.min(S.streak, 5) * 5;
+            r.xp = 15 + r.stars * 10 + o.d * 5;
+            S.coins += r.coins; S.xp += r.xp; S.cakes++; S.best = Math.max(S.best, r.tot);
+            S.streak = r.stars >= 3 ? S.streak + 1 : 0;
+            r.unl = []; r.up = false;
+            while (S.xp >= need()) {
+                S.xp -= need(); S.lv++; r.up = true;
+                [SH, FL, CR, DC, ED, BX, BC].forEach(t => Object.keys(t).forEach(k => { if (t[k][t[k].length - 1] === S.lv) r.unl.push(t[k][0]); }));
+            }
+            save(); G.res = r; G.ph = 8; G.dlv = true;
+            render();
+            setTimeout(() => { G.dlv = false; render(); r.stars >= 3 ? playSfxSuccess() : playSfxFail(); if (r.stars >= 4) launchFireworkShow(3); if (r.up) showToast('🎉 Lên Level ' + S.lv + '!'); }, 1400);
+        }
+
+        function onGameClick(e) {
+            const b = e.target.closest('[data-a]');
+            if (!b || (b.disabled)) return;
+            const a = b.dataset.a, k = b.dataset.k, v = b.dataset.v;
+            if (a === 'tutclose') { $g('gtut').classList.remove('show'); return; }
+            if (a === 'tut') { $g('gtut').classList.add('show'); return; }
+            if (!G || G.baking || G.dlv) return;
+            if (b.dataset.lock) { showToast('🔒 Mở khóa ở Level ' + b.dataset.lock); playSfxFail(); return; }
+            playSfxClick();
+            if (a === 'c') {
+                G.c[k] = v;
+                if (k === 'flavor') { G.c.baked = false; G.c.batter = false; }
+                if (k === 'cream') G.c.fx = 'cream';
+            } else if (a === 'p') {
+                if (k === 'card') G.p.card = !G.p.card; else G.p[k] = v;
+            } else if (a === 'tool') { G.tool = G.tool === v ? null : v; G.sel = -1; }
+            else if (a === 'txt') { G.c.text = G.c.text === v ? '' : v; }
+            else if (a === 'del') { if (G.sel >= 0) { G.c.decos.splice(G.sel, 1); G.sel = -1; } }
+            else if (a === 'clr') { G.c.decos = []; G.sel = -1; }
+            else if (a === 'go') { G.ph = +v; }
+            else if (a === 'back') { G.ph = Math.max(1, G.ph - 1); }
+            else if (a === 'again') { newOrder(); return; }
+            else if (a === 'bake') {
+                G.baking = true; G.c.batter = true; render();
+                requestAnimationFrame(() => requestAnimationFrame(() => { const f = $g('pbf'); if (f) f.style.width = '100%'; }));
+                setTimeout(() => { G.baking = false; G.c.baked = true; G.c.fx = 'bake'; playSfxSuccess(); render(); }, 2300);
+                return;
+            } else if (a === 'pack') { G.p.packed = true; playSfxSuccess(); }
+            else if (a === 'next') {
+                const m = canNext();
+                if (m) { showToast(m); playSfxFail(); return; }
+                if (G.ph === 7) { finish(); return; }
+                G.ph++;
+            }
+            render();
+        }
+
+        /* ----- Kéo thả trang trí trên bánh ----- */
+        function svgPt(e) {
+            const r = $g('ck').getBoundingClientRect();
+            return [(e.clientX - r.left) / r.width * 320, (e.clientY - r.top) / r.height * 250];
+        }
+        function clampDeco(x, y) {
+            const rx = SZ[G.c.size || 'M'][1] * 0.85, ry = rx * 0.4 + 6;
+            const dx = (x - 160) / rx, dy = (y - 112) / ry, n = Math.hypot(dx, dy);
+            if (n > 1) { x = 160 + dx / n * rx; y = 112 + dy / n * ry; }
+            return [Math.round(x), Math.round(y)];
+        }
+        function onDown(e) {
+            if (!G || G.ph !== 5 || !G.c.baked || !e.target.closest('#ck')) return;
+            const t = e.target.closest('[data-i]');
+            if (t) { G.sel = +t.dataset.i; drag = { i: G.sel, moved: false }; drawStage(); drawPanel(); return; }
+            if (G.tool) {
+                const [x, y] = clampDeco(...svgPt(e));
+                G.c.decos.push({ k: G.tool, x, y });
+                G.sel = G.c.decos.length - 1;
+                playTone(720, 0.08, 0, 'sine', 0.12);
+                drawStage(); drawPanel();
+            } else { showToast('Chọn một món trang trí trước nhé!'); }
+        }
+        function onMove(e) {
+            if (!drag || !G) return;
+            const [x, y] = clampDeco(...svgPt(e)), d = G.c.decos[drag.i];
+            if (!d) return;
+            d.x = x; d.y = y; drag.moved = true;
+            const el = document.querySelector(`#ck [data-i="${drag.i}"]`);
+            if (el) { el.setAttribute('x', x); el.setAttribute('y', y); }
+        }
+        function onUp(e) {
+            if (!drag || !G) return;
+            const r = $g('ck').getBoundingClientRect();
+            const out = e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom;
+            if (drag.moved && out) { G.c.decos.splice(drag.i, 1); G.sel = -1; playSfxFail(); }
+            drag = null;
+            drawStage(); drawPanel();
+        }
+    </script>
+</body>
+</html>
