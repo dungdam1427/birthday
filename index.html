@@ -498,6 +498,20 @@
         @media (min-width:640px){.birthday-card-panel{padding:32px 28px}}
         @media (min-width:860px){.card-grid-layout{grid-template-columns:5fr 7fr}}
         @media (min-width:900px){.gmain{grid-template-columns:7fr 5fr;align-items:start}}
+        .stp{display:none;font-size:.72rem;font-weight:800;color:#9D174D}
+        @media (max-width:899px){
+            .top-navbar{position:static}
+            .stage{position:sticky;top:0;z-index:20;min-height:0;max-height:40vh;overflow-y:auto;padding:6px 8px;gap:4px;box-shadow:0 8px 18px rgba(0,0,0,.5)}
+            .stp{display:block}
+            #ck{width:auto;height:min(25vh,205px);max-width:100%}
+            .stage svg[aria-label="Hộp bánh"]{width:auto!important;height:min(25vh,205px)}
+            .stage .chip{font-size:.7rem;padding:2px 7px}
+            .cust svg{width:72px}
+            .bub{font-size:.85rem;padding:6px 10px}
+            .stars{font-size:1.6rem}
+            .opts{grid-template-columns:repeat(auto-fill,minmax(80px,1fr))}
+            .gnav{position:sticky;bottom:0;z-index:20;padding:10px 0 12px;background:linear-gradient(rgba(9,10,20,0),rgba(9,10,20,.96) 35%)}
+        }
         @media (prefers-reduced-motion:reduce){.spr,.pop,.lid,.cust{animation:none}}
     </style>
 </head>
@@ -572,8 +586,8 @@
         <section id="screen-card" class="screen" aria-labelledby="card-title">
             <div class="birthday-card-panel">
                 <div class="card-header-center">
-                    <div class="badge-pill">🌟 HAPPY BIRTHDAY TO YOU 🌟</div>
-                    <h1 id="card-title" class="hero-title">Chúc Mừng Sinh Nhật!</h1>
+                    <div class="badge-pill">🌟 HAPPY BIRTHDAY TO MY BEST FRIEND 🌟</div>
+                    <h1 id="card-title" class="hero-title">Chúc Mừng Sinh Nhật Rực Rỡ Nhất!</h1>
                 </div>
 
                 <div class="card-grid-layout">
@@ -615,7 +629,7 @@
                     <!-- Cột phải: Lời chúc mừng chạy chữ & Trạng thái điều ước -->
                     <div class="message-content-box">
                         <div>
-                            <h2 class="greeting-headline">Gửi Ánh! </h2>
+                            <h2 class="greeting-headline">Gửi Cậu — Người Bạn Tuyệt Vời! 💖</h2>
                             <p id="typewriter-wish" class="greeting-paragraph"></p>
                         </div>
 
@@ -645,7 +659,7 @@
             <div class="gm" id="gm">
                 <div class="gbar" id="gbar"></div>
                 <div class="phbar" id="phbar"></div>
-                <div class="gmain">
+                <div class="gmain" id="gmain">
                     <div class="stage" id="stage"></div>
                     <div>
                         <div class="gbox" id="gpanel"></div>
@@ -978,7 +992,7 @@
             set(v) { try { localStorage.setItem(SAVE_KEY, JSON.stringify(v)); } catch (e) { /* bỏ qua */ } }
         };
         let S = Object.assign({ lv: 1, xp: 0, coins: 0, cakes: 0, best: 0, streak: 0, tut: 0 }, store.get() || {});
-        let G = null, lastTh = '', gTimer = null, drag = null, gReady = false;
+        let pend = null, G = null, lastTh = '', gTimer = null, drag = null, gReady = false;
 
         const pick = a => a[Math.random() * a.length | 0];
         const shuf = a => a.slice().sort(() => Math.random() - 0.5);
@@ -1081,8 +1095,7 @@
                     o += `<text x="${cx}" y="${cy + 4}" text-anchor="middle" font-size="${fs.toFixed(1)}" font-weight="800" font-family="'Segoe Script','Brush Script MT',cursive,sans-serif" fill="${dark ? '#7C2D12' : '#fff'}" style="pointer-events:none">${c.text.replace(/[<>&]/g, '')}</text>`;
                 }
                 c.decos.forEach((e, i) => {
-                    o += `<text data-i="${i}" x="${e.x}" y="${e.y}" text-anchor="middle" dominant-baseline="central" font-size="26" style="cursor:grab">${DC[e.k][0]}</text>`;
-                    if (i === selI) o += `<circle cx="${e.x}" cy="${e.y}" r="18" fill="none" stroke="#EC4899" stroke-width="2.5" stroke-dasharray="4 3" style="pointer-events:none"/>`;
+                    o += `<g data-i="${i}" transform="translate(${e.x} ${e.y})" style="cursor:grab;touch-action:none"><circle r="21" fill="transparent"/>${i === selI ? '<circle r="18" fill="none" stroke="#EC4899" stroke-width="2.5" stroke-dasharray="4 3"/>' : ''}<text text-anchor="middle" dominant-baseline="central" font-size="26" style="pointer-events:none">${DC[e.k][0]}</text></g>`;
                 });
             }
             c.fx = null;
@@ -1126,6 +1139,8 @@
                 gm.addEventListener('pointerdown', onDown);
                 window.addEventListener('pointermove', onMove);
                 window.addEventListener('pointerup', onUp);
+                window.addEventListener('pointercancel', () => { pend = null; if (drag) { drag = null; if (G) { drawStage(); drawPanel(); } } });
+                gm.addEventListener('touchmove', e => { if (drag && e.cancelable) e.preventDefault(); }, { passive: false });
                 $g('gtut').addEventListener('click', onGameClick);
             }
             if (!G) { if (!restoreOrder()) newOrder(); }
@@ -1198,9 +1213,9 @@
             if (ph === 1) {
                 st.innerHTML = `<div class="cust">${custSvg(o.cu, 'wow')}<div class="bub">Chào bạn! Mình là <b>${o.cu.n}</b>. Mình cần một chiếc bánh chủ đề <b>${o.th}</b> nhé!</div></div><div style="font-weight:800">Đơn ${o.id}</div>${chipsHtml(R.map(x => ({ ...x, g: 0 })), true)}`;
             } else if (ph <= 6) {
-                st.innerHTML = chipsHtml(R.filter(x => x.cat !== 'pack'), false) + cakeSvg(G.c, 'a', G.sel, 'ck');
+                st.innerHTML = `<div class="stp">Bước ${ph}/8 · ${PH[ph - 1]}</div>` + chipsHtml(R.filter(x => x.cat !== 'pack'), false) + cakeSvg(G.c, 'a', G.sel, 'ck');
             } else if (ph === 7) {
-                st.innerHTML = chipsHtml(R.filter(x => x.cat === 'pack'), true) + boxSvg(G.p, G.c, G.p.packed);
+                st.innerHTML = `<div class="stp">Bước 7/8 · Đóng gói</div>` + chipsHtml(R.filter(x => x.cat === 'pack'), true) + boxSvg(G.p, G.c, G.p.packed);
             } else if (G.dlv) {
                 st.innerHTML = `<div class="cust">${custSvg(o.cu, 'wow')}<div class="give" style="width:130px">${boxSvg(G.p, G.c, true)}</div></div><b>Đang giao bánh...</b>`;
             } else {
@@ -1241,6 +1256,12 @@
             const ph = G.ph, n = $g('gnav');
             if (ph === 8) { n.innerHTML = G.dlv ? '' : '<button type="button" class="btn btn-primary" data-a="again">🍰 Nhận đơn tiếp theo</button>'; return; }
             n.innerHTML = (ph > 1 ? '<button type="button" class="btn" data-a="back">← Quay lại</button>' : '') + `<button type="button" class="btn btn-primary" data-a="next">${ph === 1 ? '🍰 Bắt đầu làm bánh' : ph === 7 ? '🚚 Gửi bánh' : 'Tiếp →'}</button>`;
+        }
+
+        function toWork() {
+            if (innerWidth >= 900) return;
+            const m = $g('gmain');
+            if (m) window.scrollTo({ top: m.getBoundingClientRect().top + window.scrollY, behavior: 'smooth' });
         }
 
         function canNext() {
@@ -1289,7 +1310,7 @@
             else if (a === 'clr') { G.c.decos = []; G.sel = -1; }
             else if (a === 'go') { G.ph = +v; }
             else if (a === 'back') { G.ph = Math.max(1, G.ph - 1); }
-            else if (a === 'again') { newOrder(); return; }
+            else if (a === 'again') { newOrder(); toWork(); return; }
             else if (a === 'bake') {
                 G.baking = true; G.c.batter = true; render();
                 requestAnimationFrame(() => requestAnimationFrame(() => { const f = $g('pbf'); if (f) f.style.width = '100%'; }));
@@ -1299,10 +1320,11 @@
             else if (a === 'next') {
                 const m = canNext();
                 if (m) { showToast(m); playSfxFail(); return; }
-                if (G.ph === 7) { finish(); return; }
+                if (G.ph === 7) { finish(); toWork(); return; }
                 G.ph++;
             }
             render();
+            if (a === 'go' || a === 'back' || a === 'next') toWork();
         }
 
         /* ----- Kéo thả trang trí trên bánh ----- */
@@ -1320,13 +1342,8 @@
             if (!G || G.ph !== 5 || !G.c.baked || !e.target.closest('#ck')) return;
             const t = e.target.closest('[data-i]');
             if (t) { G.sel = +t.dataset.i; drag = { i: G.sel, moved: false }; drawStage(); drawPanel(); return; }
-            if (G.tool) {
-                const [x, y] = clampDeco(...svgPt(e));
-                G.c.decos.push({ k: G.tool, x, y });
-                G.sel = G.c.decos.length - 1;
-                playTone(720, 0.08, 0, 'sine', 0.12);
-                drawStage(); drawPanel();
-            } else { showToast('Chọn một món trang trí trước nhé!'); }
+            if (G.tool) pend = { x: e.clientX, y: e.clientY };
+            else showToast('Chọn một món trang trí trước nhé!');
         }
         function onMove(e) {
             if (!drag || !G) return;
@@ -1334,9 +1351,20 @@
             if (!d) return;
             d.x = x; d.y = y; drag.moved = true;
             const el = document.querySelector(`#ck [data-i="${drag.i}"]`);
-            if (el) { el.setAttribute('x', x); el.setAttribute('y', y); }
+            if (el) el.setAttribute('transform', `translate(${x} ${y})`);
         }
         function onUp(e) {
+            if (pend && G) {
+                const pp = pend; pend = null;
+                if (G.ph === 5 && G.tool && Math.hypot(e.clientX - pp.x, e.clientY - pp.y) < 10) {
+                    const [x, y] = clampDeco(...svgPt(e));
+                    G.c.decos.push({ k: G.tool, x, y });
+                    G.sel = G.c.decos.length - 1;
+                    playTone(720, 0.08, 0, 'sine', 0.12);
+                    drawStage(); drawPanel();
+                }
+                return;
+            }
             if (!drag || !G) return;
             const r = $g('ck').getBoundingClientRect();
             const out = e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom;
